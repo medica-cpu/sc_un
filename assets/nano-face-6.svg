@@ -1,9 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="480" height="430" viewBox="0 0 480 430"><defs>
- <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#211a13"/><stop offset="1" stop-color="#090807"/></linearGradient>
- <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f1d9b4"/><stop offset="1" stop-color="#ad8254"/></linearGradient>
- <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="14" markerHeight="14" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#e5c49a"/></marker>
- </defs><rect x="7" y="7" width="466" height="416" rx="28" fill="url(#bg)" stroke="#b99062" stroke-width="2"/><text x="35" y="60" fill="#e9cda8" font-family="Georgia,serif" font-size="40">6</text><text x="435" y="54" text-anchor="end" fill="#bca184" font-family="Arial,sans-serif" font-size="13">READY SKIN NANOSKIN</text><g transform="translate(40 6)"><path d="M200 42 C132 42 91 91 91 164 C91 231 137 286 200 300 C263 286 309 231 309 164 C309 91 268 42 200 42Z" fill="#17120e" stroke="#d4b48a" stroke-width="3"/>
-<path d="M130 145 Q157 130 181 145 M219 145 Q244 130 270 145" fill="none" stroke="#d4b48a" stroke-width="3" stroke-linecap="round"/>
-<path d="M200 150 Q188 178 200 185" fill="none" stroke="#d4b48a" stroke-width="2.6" stroke-linecap="round"/><path d="M179 220 Q200 231 221 220" fill="none" stroke="#d4b48a" stroke-width="3" stroke-linecap="round"/>
-<path d="M91 130 Q63 140 75 184 Q82 205 98 208 M309 130 Q337 140 325 184 Q318 205 302 208" fill="none" stroke="#d4b48a" stroke-width="3"/>
-<path d="M150 298 Q142 326 130 343 M250 298 Q258 326 270 343" stroke="#d4b48a" stroke-width="3" fill="none"/><path d="M151 313 Q145 292 149 270" stroke="#e5c49a" stroke-width="7" fill="none" marker-end="url(#arr)" stroke-linecap="round"/><path d="M249 313 Q255 292 251 270" stroke="#e5c49a" stroke-width="7" fill="none" marker-end="url(#arr)" stroke-linecap="round"/><ellipse cx="200" cy="294" rx="22" ry="17" fill="none" stroke="#b78658" stroke-width="2.5" stroke-dasharray="5 5"/></g><text x="240" y="395" text-anchor="middle" fill="#e8d8c4" font-family="Arial,sans-serif" font-size="14">ИЛЛЮСТРАЦИЯ ПО СХЕМЕ РУКОВОДСТВА</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="430" viewBox="0 0 480 430" role="img" aria-label="Шаг 6: Вверх по боковым поверхностям шеи">
+ <defs><marker id="ar" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M1 1 L11 6 L1 11" fill="none" stroke="#118651" stroke-width="2"/></marker></defs>
+ <rect x="5" y="5" width="470" height="420" rx="24" fill="#fffefa" stroke="#e1d6c8"/>
+ <text x="28" y="47" font-family="Arial,sans-serif" font-size="25" font-weight="bold" fill="#25231e">Шаг 6</text>
+ <text x="28" y="407" font-family="Arial,sans-serif" font-size="14" fill="#635c51">ReadySkin nanoSkin · схема по инструкции, с. 26</text>
+ <g transform="translate(0 22)"><g fill="none" stroke="#2c2b29" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+<path d="M190 50 Q240 68 290 50 M206 65 Q240 83 274 65"/>
+<path d="M195 76 Q199 109 186 140 Q181 158 160 171 L115 224 L95 285 M285 76 Q281 109 294 140 Q299 158 320 171 L365 224 L385 285"/>
+<path d="M190 140 Q240 190 290 140 M205 160 L205 325 M275 160 L275 325"/>
+</g></g>
+ <g transform="translate(0 22)" fill="none" stroke="#118651" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ar)"><path d="M201 286 C191 261 187 239 194 214"/><path d="M279 286 C289 261 293 239 286 214"/></g>
+ </svg>
