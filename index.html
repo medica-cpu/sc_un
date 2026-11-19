@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#090807">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Мой уход">
+  <meta name="description" content="Персональный планировщик ухода с выбором Panasonic EH-SR90 или ReadySkin nanoSkin">
+  <link rel="manifest" href="./manifest.webmanifest?v=23">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+  <link rel="stylesheet" href="./styles.css?v=23">
+  <title>Мой уход · Panasonic и ReadySkin</title>
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand-mark" aria-hidden="true">✧</div>
+    <div class="brand-copy"><p id="dailyCompliment">Ты заслуживаешь заботы и красивых моментов каждый день.</p></div>
+  </header>
+
+  <main class="app-main">
+    <!-- TODAY -->
+    <section class="screen active" id="screen-today" aria-labelledby="todayHeading">
+      <div class="page-heading compact-heading">
+        <h1 id="todayHeading">Твой уход на сегодня</h1>
+        <span class="device-chip" id="deviceChip">PANASONIC · EH-SR90</span>
+      </div>
+      <div class="week-strip" id="weekStrip" aria-label="Дни недели"></div>
+
+      <div id="todayDetails" class="today-details">
+        <article class="today-card">
+          <div class="today-card-top"><span class="eyebrow">ПЛАН НА ВЫБРАННЫЙ ДЕНЬ</span><span class="status-pill" id="todayStatus">Запланировано</span></div>
+          <div class="mode-line"><div><h2 id="todayMode">RF × EMS LIFT</h2><p id="todaySubtitle" class="muted"></p></div><span class="mode-symbol" id="modeSymbol">RF</span></div>
+          <div class="today-facts"><span>Начало <b id="todayTime">21:00</b></span><span>Режим <b id="todayDuration">6 мин</b></span></div>
+          <div class="progress-track"><div id="todayProgress" class="progress-fill"></div></div>
+          <div class="progress-caption"><span id="stepProgressText">0 из 0 этапов</span><span id="progressPercent">0%</span></div>
+        </article>
+        <div class="section-title-row"><h2>Пошаговый план</h2><button class="quiet-button" id="markAllBtn" type="button">Завершить уход</button></div>
+        <div class="step-list" id="todaySteps"></div>
+        <div class="below-note" id="todaySafetyNote"></div>
+        <button class="outline-wide" id="openGuideBtn" type="button">Открыть пошаговый режим <span>→</span></button>
+      </div>
+      <p class="collapse-hint" id="collapseHint">Нажми на выбранную дату ещё раз, чтобы скрыть план дня.</p>
+      <div class="goal-card" id="goalCard" hidden><div><span class="eyebrow">МОЯ ЦЕЛЬ</span><strong id="goalTitle"></strong><span class="muted" id="goalCountdown"></span></div><span class="goal-icon">✦</span></div>
+    </section>
+
+    <!-- PLAN -->
+    <section class="screen" id="screen-plan" aria-labelledby="planHeading">
+      <div class="page-heading"><h1 id="planHeading">Недельный план</h1><p class="muted">Выбирай режим для каждого дня. Список прокручивается — на экране удобно видеть четыре дня одновременно.</p></div>
+      <div class="plan-summary" id="planSummary"></div>
+      <div class="plan-list" id="planList" aria-label="План на семь дней"></div>
+      <div class="rule-card" id="planRulesCard"><h2 id="planRulesTitle">Правила частоты EH-SR90</h2><ul id="planRulesList">
+        <li>RF × EMS LIFT и RF PUMP — суммарно не более 3 раз в неделю.</li>
+        <li>Между RF-процедурами — минимум один день перерыва.</li>
+        <li>EYE CARE — не более 3 раз в неделю, с минимум одним днём между сеансами.</li>
+        <li>Не выполняй два специальных режима в один день. CLEAN и MOIST можно выполнять ежедневно.</li>
+      </ul><a class="source-link" id="planSourceLink" href="https://panasonic.jp/face/products/EH-SR90/feature/instruction.html" target="_blank" rel="noopener">Инструкция Panasonic ↗</a></div>
+      <button class="outline-wide" id="restorePlanBtn" type="button">Вернуть исходный план</button>
+    </section>
+
+    <!-- HISTORY -->
+    <section class="screen" id="screen-history" aria-labelledby="historyHeading">
+      <div class="page-heading"><h1 id="historyHeading">История</h1><p class="muted">Календарь выполненных процедур и твои наблюдения.</p></div>
+      <div class="calendar-card">
+        <div class="calendar-head"><button class="month-nav" id="prevMonth" type="button" aria-label="Предыдущий месяц">‹</button><strong id="monthLabel">Ноябрь 2026</strong><button class="month-nav" id="nextMonth" type="button" aria-label="Следующий месяц">›</button></div>
+        <div class="calendar-grid calendar-weekdays"><span>ПН</span><span>ВТ</span><span>СР</span><span>ЧТ</span><span>ПТ</span><span>СБ</span><span>ВС</span></div>
+        <div class="calendar-grid" id="monthGrid"></div>
+        <div class="calendar-legend" id="calendarLegend"><span><i class="legend-bar rf"></i> RF</span><span><i class="legend-bar eye"></i> EYE CARE</span><span><i class="legend-bar done"></i> выполнено</span></div>
+      </div>
+      <div class="note-card">
+        <div class="note-title-row"><h2>Заметки</h2><span class="note-date-pill" id="noteDatePill"></span></div>
+        <p class="note-selected-date" id="noteDateTitle">17 ноября 2026</p>
+        <label class="field-label" for="skinNote">Как кожа чувствовала себя после ухода?</label>
+        <div class="feeling-options" id="feelingOptions"><button type="button" data-feeling="Комфортно">Комфортно</button><button type="button" data-feeling="Сухость">Сухость</button><button type="button" data-feeling="Чувствительность">Чувствительность</button><button type="button" data-feeling="Покраснение">Покраснение</button></div>
+        <textarea id="skinNote" rows="3" placeholder="Дополнительные наблюдения…"></textarea>
+        <button class="primary-wide" id="saveNoteBtn" type="button">Сохранить заметку</button>
+        <p class="small muted" id="noteStatus" role="status"></p>
+      </div>
+      <div class="stats-grid" id="historyStats"></div>
+      <div class="chart-card"><h2>Регулярность за 7 дней</h2><div class="bars" id="weekBars"></div><p class="small muted" id="weekCompletionSummary">Процент рассчитывается по отмеченным этапам каждого дня.</p></div>
+    </section>
+
+    <!-- TECHNIQUE -->
+    <section class="screen" id="screen-technique" aria-labelledby="techniqueHeading">
+      <div class="technique-top"><h1 id="techniqueHeading">Техника</h1><button class="clean-open-button" id="openCleanBtn" type="button"><span class="clean-button-icon">✧</span>Очистка</button></div>
+      <h2 class="technique-subheading">Техника использования</h2>
+      <div class="video-slider" id="videoSlider">
+        <div class="video-stage" id="videoStage"></div>
+        <div class="video-caption"><div><span class="eyebrow" id="videoCount">ВИДЕО 1 ИЗ 5</span><h2 id="videoTitle">RF × EMS LIFT</h2><p id="videoDescription"></p></div><span class="duration-chip" id="videoDuration">6 мин</span></div>
+      </div>
+      <div class="carousel-controls" id="videoControls">
+        <button class="round-arrow" id="videoPrev" type="button" aria-label="Предыдущее видео">‹</button>
+        <div class="dots" id="videoDots"></div>
+        <button class="round-arrow" id="videoNext" type="button" aria-label="Следующее видео">›</button>
+      </div>
+      <button class="photo-open-button" id="openPhotosBtn" type="button"><span>▧</span> Смотреть фото</button>
+      <p class="technique-footnote" id="techniqueFootnote">Видео загружается после нажатия. Для просмотра нужен интернет; если встроенный плеер недоступен, открой ролик на YouTube.</p>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="screen" id="screen-settings" aria-labelledby="settingsHeading">
+      <div class="page-heading"><h1 id="settingsHeading">Настройки</h1><p class="muted">Напоминания, косметика и параметры приложения.</p></div>
+
+      <div class="settings-card device-settings-card">
+        <h2>Выбранный аппарат</h2>
+        <label class="field-label" for="deviceSelect">Устройство для текущей программы</label>
+        <select id="deviceSelect" class="device-select">
+          <option value="panasonic">Panasonic VITALIFT EH-SR90</option>
+          <option value="nanoskin">ReadySkin nanoSkin</option>
+        </select>
+        <p class="small muted" id="deviceDescription"></p>
+        <div class="device-course-note" id="deviceCourseNote"></div>
+      </div>
+
+      <div class="settings-card">
+        <h2>Напоминания</h2>
+        <label class="field-label" for="reminderTime">Время напоминания</label>
+        <input id="reminderTime" type="time" value="21:00">
+        <label class="toggle-row"><span><strong>Напоминать о начале ежедневного ухода</strong><small>Каждый день в выбранное время.</small></span><input id="eveningReminder" type="checkbox" checked></label>
+        <label class="toggle-row"><span><strong>Напоминать о специальных процедурах</strong><small id="specialReminderHelp">Отдельное напоминание о специальных процедурах.</small></span><input id="specialReminder" type="checkbox" checked></label>
+        <label class="toggle-row"><span><strong>Звуковой сигнал таймера</strong><small>Короткий сигнал по окончании отсчёта.</small></span><input id="soundEnabled" type="checkbox" checked></label>
+        <div class="permission-row"><button class="secondary-button" id="permissionBtn" type="button">Разрешить уведомления</button><p id="permissionStatus" class="small muted" role="status"></p></div>
+        <button class="primary-wide" id="calendarExportBtn" type="button">Скачать напоминания для календаря (.ics)</button>
+        <p class="small muted">Для надёжных напоминаний при закрытом приложении импортируй файл в календарь iPhone. Веб-приложение проверяет время, пока открыто; фоновые уведомления iOS не гарантируются.</p>
+      </div>
+
+      <div class="settings-card">
+        <h2>Твои средства</h2>
+        <p class="muted settings-description">Названия можно менять — они сохранятся на этом устройстве.</p>
+        <div class="product-edit-list" id="productEditList"></div>
+      </div>
+
+      <div class="settings-card">
+        <h2>Моя цель</h2>
+        <label class="field-label" for="goalName">Название события</label><input id="goalName" type="text" maxlength="50" placeholder="Например, отпуск">
+        <label class="field-label" for="goalDate">Дата события</label><input id="goalDate" type="date">
+        <button class="secondary-button full-button" id="saveGoalBtn" type="button">Сохранить цель</button>
+      </div>
+
+      <div class="settings-card">
+        <h2>Данные приложения</h2>
+        <div class="data-actions"><button class="secondary-button" id="backupBtn" type="button">Экспортировать данные</button><button class="secondary-button" id="importBtn" type="button">Импортировать данные</button><input id="importFile" type="file" accept="application/json" hidden></div>
+        <div class="settings-links" id="deviceSourceLinks"><a class="source-link" href="https://panasonic.jp/face/products/EH-SR90/feature/instruction.html" target="_blank" rel="noopener">Инструкция EH-SR90 ↗</a><a class="source-link" href="https://panasonic.jp/face/app/with-pb.html" target="_blank" rel="noopener">with Panasonic Beauty ↗</a></div>
+      </div>
+      <p class="disclaimer">Это независимый планировщик, не официальное приложение Panasonic или ReadySkin. Он не подключается к прибору и не заменяет руководство производителя. Выполнение сеансов отмечается вручную.</p>
+    </section>
+  </main>
+
+  <nav class="bottom-nav" aria-label="Основная навигация">
+    <button class="nav-item active" data-screen="today" type="button" aria-label="Сегодня"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3.5 10.5 8.5-7 8.5 7"/><path d="M5.5 9.5v11h13v-11M9.5 20.5v-7h5v7"/></svg></span><span>Сегодня</span></button>
+    <button class="nav-item" data-screen="plan" type="button" aria-label="План"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="4" width="17" height="16" rx="2.5"/><path d="M8 4v16M14 4v16M3.5 9.3h17M3.5 14.6h17"/></svg></span><span>План</span></button>
+    <button class="nav-item" data-screen="technique" type="button" aria-label="Техника"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h6.5a3 3 0 0 1 3 3v10H7a3 3 0 0 0-3 2z"/><path d="M20 5.5h-6.5a3 3 0 0 0-3 3v10H17a3 3 0 0 1 3 2z"/><path d="M7 9h2M15 9h2"/></svg></span><span>Техника</span></button>
+    <button class="nav-item" data-screen="history" type="button" aria-label="История"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V9M9 19V5M14 19v-7M19 19V3"/></svg></span><span>История</span></button>
+    <button class="nav-item" data-screen="settings" type="button" aria-label="Настройки"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 2.8h4l.7 2.1a7.7 7.7 0 0 1 1.5.9l2.1-.5 2 3.5-1.5 1.6a8 8 0 0 1 0 1.8l1.5 1.6-2 3.5-2.1-.5a7.7 7.7 0 0 1-1.5.9l-.7 2.1h-4l-.7-2.1a7.7 7.7 0 0 1-1.5-.9l-2.1.5-2-3.5 1.5-1.6a8 8 0 0 1 0-1.8L3.7 8.8l2-3.5 2.1.5a7.7 7.7 0 0 1 1.5-.9z"/><circle cx="12" cy="11.3" r="3"/></svg></span><span>Настройки</span></button>
+  </nav>
+
+  <!-- Guided step mode -->
+  <dialog id="guideDialog" class="app-dialog guide-dialog">
+    <div class="dialog-top"><div><span class="eyebrow">ПОШАГОВАЯ ПРОЦЕДУРА</span><div class="guide-count" id="guideCount">ЭТАП 1 ИЗ 5</div></div><button id="closeGuide" class="close-button" type="button" aria-label="Закрыть">×</button></div>
+    <div class="guide-content">
+      <h2 id="guideTitle">Подготовка кожи</h2>
+      <p id="guideDescription" class="guide-description"></p>
+      <div class="guide-timer-caption" id="guideTimerCaption">ОБЩАЯ ДЛИТЕЛЬНОСТЬ РЕЖИМА</div>
+      <div class="guide-timer" id="guideTimer">06:00</div>
+      <div class="guide-movement-pace" id="guideMovementPace" hidden><strong>Темп отдельных движений</strong><p id="guideMovementPaceText"></p></div>
+      <p class="guide-hint" id="guideHint"></p>
+    </div>
+    <div class="guide-action-area">
+      <div class="guide-nav-buttons"><button class="secondary-button" id="guidePrev" type="button">Назад</button><button class="secondary-button" id="guideNext" type="button">Далее</button></div>
+      <button class="primary-button guide-start" id="guideStart" type="button">Старт таймера</button>
+    </div>
+  </dialog>
+
+  <!-- Photo slider -->
+  <dialog id="photoDialog" class="app-dialog gallery-dialog">
+    <div class="dialog-top"><div><span class="eyebrow" id="photoEyebrow">СХЕМЫ PANASONIC</span><div class="guide-count" id="photoCount">СЛАЙД 1 ИЗ 4</div></div><button class="close-button" id="closePhotos" type="button" aria-label="Закрыть">×</button></div>
+    <h2 id="photoTitle">RF × EMS LIFT</h2>
+    <div class="gallery-image-wrap"><img id="photoImage" alt="Пошаговая схема Panasonic"></div>
+    <p class="gallery-caption" id="photoCaption"></p>
+    <div class="carousel-controls gallery-controls"><button class="round-arrow" id="photoPrev" type="button" aria-label="Предыдущее фото">‹</button><div class="dots" id="photoDots"></div><button class="round-arrow" id="photoNext" type="button" aria-label="Следующее фото">›</button></div>
+  </dialog>
+
+  <!-- Device cleaning slider -->
+  <dialog id="cleanDialog" class="app-dialog gallery-dialog">
+    <div class="dialog-top"><div><span class="eyebrow">ОЧИСТКА</span><div class="guide-count" id="cleanCount">СЛАЙД 1 ИЗ 5</div></div><button class="close-button" id="closeClean" type="button" aria-label="Закрыть">×</button></div>
+    <h2 id="cleanTitle">Промой головку и кольцо</h2>
+    <div class="gallery-image-wrap clean-image-wrap"><img id="cleanImage" alt="Инструкция по очистке выбранного аппарата"></div>
+    <div class="gallery-caption clean-caption" id="cleanCaption"></div>
+    <div class="carousel-controls gallery-controls"><button class="round-arrow" id="cleanPrev" type="button" aria-label="Предыдущий слайд">‹</button><div class="dots" id="cleanDots"></div><button class="round-arrow" id="cleanNext" type="button" aria-label="Следующий слайд">›</button></div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status"></div>
+  <script src="./media.js?v=23"></script>
+  <script src="./app.js?v=23"></script>
+</body>
+</html>
