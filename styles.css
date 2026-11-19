@@ -46,3 +46,19 @@ dialog{color:var(--ink)}.app-dialog{width:min(620px,calc(100vw - 18px));max-widt
 .calendar-bar.clean{background:#9e805d}.calendar-bar.nourish{background:#d2b88f}.calendar-bar.massage{background:#b08d66}
 .contra-details{margin-top:12px;border-top:1px solid rgba(216,187,150,.18);padding-top:11px}.contra-details summary{color:#e6c69d;font-weight:800;font-size:13px;cursor:pointer;list-style:none}.contra-details summary::-webkit-details-marker{display:none}.contra-details summary:after{content:"＋";float:right;color:#d6b78b}.contra-details[open] summary:after{content:"−"}.contra-details p{font-size:12px;line-height:1.55;color:#cdbda8;margin:10px 0 0}
 .legend-bar.clean{background:#9e805d}.legend-bar.nourish{background:#d2b88f}.legend-bar.massage{background:#b08d66}
+
+/* nanoSkin v28: source-first illustrations and original page 26 of the manual */
+.nano-original-panel[hidden]{display:none!important}
+.nano-original-panel{background:#faf8f2;color:#27211a;border:1px solid #b7a28a;border-radius:16px;padding:12px 14px;margin:8px 0 18px;}
+.nano-original-panel h3{font-size:16px;margin:1px 0 8px;color:#2b251c}
+.nano-original-panel p{font-size:13px;line-height:1.5;color:#67584a;margin:0 0 10px}
+.nano-original-panel iframe{display:block;min-height:430px;width:100%;border:1px solid #dfd9cf;background:white;border-radius:8px;margin:8px auto 10px}
+.nano-original-panel .source-link{color:#2d5537;display:inline-block;font-size:13px;font-weight:650}
+.video-preview.nanoskin-preview-offline{background:#f5f2ed;}
+.video-preview.nanoskin-preview-offline:before{content:"ReadySkin nanoSkin · официальное фото доступно онлайн";position:absolute;left:15%;right:15%;top:34%;text-align:center;font-size:14px;font-weight:650;color:#5d4f42;line-height:1.5;z-index:1;}
+@media(max-width:460px){.nano-original-panel iframe{min-height:320px}}
+
+.nano-pdf-details{border-top:1px solid #ddd2c5;margin-top:12px;padding-top:11px}
+.nano-pdf-details summary{color:#4f4333;cursor:pointer;font-size:13px;font-weight:650}
+.nano-manual-quick[hidden]{display:none!important}
+.nano-manual-quick{display:block!important;font-size:12px;margin:10px auto;max-width:fit-content;color:#dcbf97;text-align:center}

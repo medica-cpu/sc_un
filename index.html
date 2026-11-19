@@ -8,9 +8,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Мой уход">
   <meta name="description" content="Персональный планировщик ухода с выбором Panasonic EH-SR90 или ReadySkin nanoSkin">
-  <link rel="manifest" href="./manifest.webmanifest?v=23">
+  <link rel="manifest" href="./manifest.webmanifest?v=28">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./styles.css?v=23">
+  <link rel="stylesheet" href="./styles.css?v=28">
   <title>Мой уход · Panasonic и ReadySkin</title>
 </head>
 <body>
@@ -95,6 +95,7 @@
         <button class="round-arrow" id="videoNext" type="button" aria-label="Следующее видео">›</button>
       </div>
       <button class="photo-open-button" id="openPhotosBtn" type="button"><span>▧</span> Смотреть фото</button>
+      <a id="nanoManualQuickLink" class="source-link nano-manual-quick" href="https://readyskin.su/wp-content/uploads/2026/07/nanoskin_manual-2.pdf#page=26" target="_blank" rel="noopener" hidden>Оригинальные схемы nanoSkin · страница 26 ↗</a>
       <p class="technique-footnote" id="techniqueFootnote">Видео загружается после нажатия. Для просмотра нужен интернет; если встроенный плеер недоступен, открой ролик на YouTube.</p>
     </section>
 
@@ -176,6 +177,12 @@
   <dialog id="photoDialog" class="app-dialog gallery-dialog">
     <div class="dialog-top"><div><span class="eyebrow" id="photoEyebrow">СХЕМЫ PANASONIC</span><div class="guide-count" id="photoCount">СЛАЙД 1 ИЗ 4</div></div><button class="close-button" id="closePhotos" type="button" aria-label="Закрыть">×</button></div>
     <h2 id="photoTitle">RF × EMS LIFT</h2>
+    <section id="nanoOriginalPanel" class="nano-original-panel" hidden aria-label="Шесть оригинальных схем со страницы 26">
+      <h3>Оригинальные схемы · стр. 26</h3>
+      <p>Все шесть рисунков непосредственно из руководства ReadySkin nanoSkin. Ниже — отдельные офлайн-подсказки к каждому шагу.</p>
+      <a id="nanoOriginalLink" class="source-link" target="_blank" rel="noopener">Открыть оригинальную страницу 26 в PDF ↗</a>
+      <details class="nano-pdf-details"><summary>Показать страницу 26 внутри приложения</summary><iframe id="nanoOriginalIframe" title="ReadySkin nanoSkin — оригинальная страница 26" loading="lazy"></iframe></details>
+    </section>
     <div class="gallery-image-wrap"><img id="photoImage" alt="Пошаговая схема Panasonic"></div>
     <p class="gallery-caption" id="photoCaption"></p>
     <div class="carousel-controls gallery-controls"><button class="round-arrow" id="photoPrev" type="button" aria-label="Предыдущее фото">‹</button><div class="dots" id="photoDots"></div><button class="round-arrow" id="photoNext" type="button" aria-label="Следующее фото">›</button></div>
@@ -191,7 +198,7 @@
   </dialog>
 
   <div class="toast" id="toast" role="status"></div>
-  <script src="./media.js?v=23"></script>
-  <script src="./app.js?v=23"></script>
+  <script src="./media.js?v=28"></script>
+  <script src="./app.js?v=28"></script>
 </body>
 </html>

@@ -1,11 +1,11 @@
-const CACHE_NAME = "beauty-dualdevice-pwa-v23";
+const CACHE_NAME = "beauty-dualdevice-pwa-v28";
 const CORE_ASSETS = [
   './',
   './index.html',
-  './styles.css?v=23',
-  './app.js?v=23',
-  './media.js?v=23',
-  './manifest.webmanifest?v=23',
+  './styles.css?v=28',
+  './app.js?v=28',
+  './media.js?v=28',
+  './manifest.webmanifest?v=28',
   './icon-192.png',
   './icon-512.png',
   './assets/clean-cotton-1.jpg',
@@ -31,7 +31,6 @@ const CORE_ASSETS = [
   './assets/nano-face-4.svg',
   './assets/nano-face-5.svg',
   './assets/nano-face-6.svg',
-  './assets/readyskin-nanoskin-hero.png',
   './assets/rf-1.png',
   './assets/rf-2.png',
   './assets/rf-3.png',

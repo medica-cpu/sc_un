@@ -24,8 +24,16 @@ const DEFAULT_PLAN=["lift","rest","eye","rest","pump","rest","eye"];
 const DEFAULT_NANOSKIN_PLAN=["nano_clean","rest","nano_nourish","rest","nano_rf","rest","nano_massaging"];
 const PANASONIC_PRODUCTS={clean:"Sesderma SENSYSES Classic",moist:"Sesderma C-VIT5",lift:"Panasonic EH-4R06",pump:"Сыворотка или эмульсия по инструкции Panasonic",eye:"MT Metatron B5 Contour"};
 const NANOSKIN_PRODUCTS={clean:"Мицеллярная вода или очищающий лосьон на водной основе",nourish:"Сыворотка или эссенция, подходящая для электропорации",contactGel:"Контактный гель для аппаратных процедур (например, RS Care Lifting Gel)"};
-const DEFAULT={version:23,device:"panasonic",profiles:{panasonic:{plan:DEFAULT_PLAN,products:PANASONIC_PRODUCTS},nanoskin:{plan:DEFAULT_NANOSKIN_PLAN,products:NANOSKIN_PRODUCTS}},plan:DEFAULT_PLAN,completed:{},stepChecks:{},notes:{},time:"21:00",eveningReminder:true,specialReminder:true,soundEnabled:true,products:PANASONIC_PRODUCTS,goal:{name:"",date:""},lastNotification:"",complimentDate:"",complimentIndex:-1};
-const STORAGE="ehsr90-readyskin-dual-v1"; // отдельное хранилище копии с двумя аппаратами; старый Panasonic-ключ читается только для однократного переноса
+const DEFAULT={version:28,device:"panasonic",profiles:{panasonic:{plan:DEFAULT_PLAN,products:PANASONIC_PRODUCTS},nanoskin:{plan:DEFAULT_NANOSKIN_PLAN,products:NANOSKIN_PRODUCTS}},plan:DEFAULT_PLAN,completed:{},stepChecks:{},notes:{},time:"21:00",eveningReminder:true,specialReminder:true,soundEnabled:true,products:PANASONIC_PRODUCTS,goal:{name:"",date:""},lastNotification:"",complimentDate:"",complimentIndex:-1};
+const STORAGE="ehsr90-readyskin-dual-v1";
+function migrateNotes(raw,fromDevice="panasonic"){
+  const notes={...(raw||{})};
+  for(const [key,value] of Object.entries(notes))if(/^\d{4}-\d{2}-\d{2}$/.test(key)){
+    notes[`${fromDevice}|${key}`]=notes[`${fromDevice}|${key}`]||value;
+    delete notes[key];
+  }
+  return notes;
+} // отдельное хранилище копии с двумя аппаратами; старый Panasonic-ключ читается только для однократного переноса
 let data=loadData();
 let currentScreen="today";
 let selectedDay=(new Date().getDay()+6)%7;
@@ -55,13 +63,13 @@ function loadData(){
       Object.keys(completed).forEach(k=>{if(!k.includes("|"))completed[`panasonic|${k}`]=completed[k];});
       Object.keys(stepChecks).forEach(k=>{if(!k.startsWith("panasonic|")&&!k.startsWith("nanoskin|")){const parts=k.split("|");if(parts.length>=2)stepChecks[`panasonic|${parts[0]}|${parts.slice(1).join("|")}`]=stepChecks[k];}});
       const active=profiles[device];
-      return {...clone(DEFAULT),...parsed,version:23,device,profiles,plan:valid(active.plan,device)?active.plan:clone(defaultPlan),products:active.products,completed,stepChecks,notes:parsed.notes||{},goal:parsed.goal||{name:"",date:""},eveningReminder:parsed.eveningReminder!==false,specialReminder:parsed.specialReminder!==false,soundEnabled:parsed.soundEnabled!==false,time:/^\d{2}:\d{2}$/.test(parsed.time||"")?parsed.time:"21:00"};
+      return {...clone(DEFAULT),...parsed,version:28,device,profiles,plan:valid(active.plan,device)?active.plan:clone(defaultPlan),products:active.products,completed,stepChecks,notes:migrateNotes(parsed.notes,device),goal:parsed.goal||{name:"",date:""},eveningReminder:parsed.eveningReminder!==false,specialReminder:parsed.specialReminder!==false,soundEnabled:parsed.soundEnabled!==false,time:/^\d{2}:\d{2}$/.test(parsed.time||"")?parsed.time:"21:00"};
     }
     // Новая копия приложения хранит данные отдельно. Если пользователь открыл прежний экспорт, поддерживаем старый формат только для Panasonic.
     const old=localStorage.getItem("ehsr90-planner-v2");
     if(old){
       const parsed=JSON.parse(old),panasonicPlan=Array.isArray(parsed.plan)&&parsed.plan.length===7?parsed.plan:DEFAULT_PLAN;
-      return {...clone(DEFAULT),device:"panasonic",profiles:{...clone(DEFAULT.profiles),panasonic:{plan:panasonicPlan,products:{...PANASONIC_PRODUCTS,...(parsed.products||{})}}},plan:panasonicPlan,products:{...PANASONIC_PRODUCTS,...(parsed.products||{})},completed:Object.fromEntries(Object.entries(parsed.completed||{}).map(([k,v])=>[`panasonic|${k}`,v])),stepChecks:Object.fromEntries(Object.entries(parsed.stepChecks||{}).map(([k,v])=>[`panasonic|${k}`,v])),notes:parsed.notes||{},goal:parsed.goal||{name:"",date:""},time:parsed.time||"21:00",eveningReminder:parsed.eveningReminder!==false,specialReminder:parsed.specialReminder!==false,soundEnabled:parsed.soundEnabled!==false,complimentDate:parsed.complimentDate||"",complimentIndex:Number.isInteger(parsed.complimentIndex)?parsed.complimentIndex:-1};
+      return {...clone(DEFAULT),device:"panasonic",profiles:{...clone(DEFAULT.profiles),panasonic:{plan:panasonicPlan,products:{...PANASONIC_PRODUCTS,...(parsed.products||{})}}},plan:panasonicPlan,products:{...PANASONIC_PRODUCTS,...(parsed.products||{})},completed:Object.fromEntries(Object.entries(parsed.completed||{}).map(([k,v])=>[`panasonic|${k}`,v])),stepChecks:Object.fromEntries(Object.entries(parsed.stepChecks||{}).map(([k,v])=>[`panasonic|${k}`,v])),notes:migrateNotes(parsed.notes,"panasonic"),goal:parsed.goal||{name:"",date:""},time:parsed.time||"21:00",eveningReminder:parsed.eveningReminder!==false,specialReminder:parsed.specialReminder!==false,soundEnabled:parsed.soundEnabled!==false,complimentDate:parsed.complimentDate||"",complimentIndex:Number.isInteger(parsed.complimentIndex)?parsed.complimentIndex:-1};
     }
   }catch(error){console.warn("Не удалось прочитать локальные данные",error);}
   return clone(DEFAULT);
@@ -279,7 +287,8 @@ function renderMonth(){
     b.addEventListener("click",()=>{selectedHistoryDate=key;renderMonth();renderNote();});grid.appendChild(b);
   }
 }
-function renderNote(){const note=data.notes[selectedHistoryDate]||{};$("noteDateTitle").textContent=dateFmt(parseLocalDate(selectedHistoryDate),{day:"numeric",month:"long",year:"numeric"});$("noteDatePill").textContent=completed(selectedHistoryDate)?"Уход выполнен":"Без отметки";$("skinNote").value=note.text||"";document.querySelectorAll("#feelingOptions button").forEach(b=>b.classList.toggle("active",b.dataset.feeling===(note.feeling||"")));$("noteStatus").textContent="";}
+function noteKey(date){return `${data.device}|${date}`;}
+function renderNote(){const note=data.notes[noteKey(selectedHistoryDate)]||{};$("noteDateTitle").textContent=dateFmt(parseLocalDate(selectedHistoryDate),{day:"numeric",month:"long",year:"numeric"});$("noteDatePill").textContent=completed(selectedHistoryDate)?"Уход выполнен":"Без отметки";$("skinNote").value=note.text||"";document.querySelectorAll("#feelingOptions button").forEach(b=>b.classList.toggle("active",b.dataset.feeling===(note.feeling||"")));$("noteStatus").textContent="";}
 function dayCompletion(dateKey,dayIndex){
   const steps=stepsForDay(dayIndex);
   let doneCount=steps.filter(step=>stepDone(dateKey,step.id)).length;
@@ -370,9 +379,9 @@ function checkReminder(){
   data.lastNotification=token;persist();sendNotification(title,body);
 }
 function scheduleReminderCheck(){if(reminderInterval)clearInterval(reminderInterval);checkReminder();reminderInterval=setInterval(checkReminder,15000);}
-function saveHistoryNote(){const feeling=document.querySelector("#feelingOptions button.active")?.dataset.feeling||"";data.notes[selectedHistoryDate]={text:$("skinNote").value.trim(),feeling};persist();$("noteStatus").textContent="Заметка сохранена на этом устройстве.";}
+function saveHistoryNote(){const feeling=document.querySelector("#feelingOptions button.active")?.dataset.feeling||"";data.notes[noteKey(selectedHistoryDate)]={text:$("skinNote").value.trim(),feeling};persist();$("noteStatus").textContent="Заметка сохранена на этом устройстве.";}
 function backupData(){persist();downloadBlob(JSON.stringify(data,null,2),"Beauty-Routine-backup.json","application/json");}
-function importData(file){const reader=new FileReader();reader.onload=()=>{try{const parsed=JSON.parse(reader.result),device=parsed.device==="nanoskin"?"nanoskin":"panasonic",allowed=device==="nanoskin"?["rest","nano_clean","nano_nourish","nano_rf","nano_massaging"]:["rest","lift","pump","eye"];if(!parsed||!Array.isArray(parsed.plan)||parsed.plan.length!==7||!parsed.plan.every(x=>allowed.includes(x)))throw new Error("Файл не содержит корректный план для выбранного аппарата.");const previousDevice=data.device;data.device=device;const issue=validatePlan(parsed.plan);if(issue){data.device=previousDevice;throw new Error(issue);}data={...clone(DEFAULT),...parsed,version:23,device,profiles:parsed.profiles||clone(DEFAULT.profiles),products:{...(device==="nanoskin"?NANOSKIN_PRODUCTS:PANASONIC_PRODUCTS),...(parsed.products||{})}};data.profiles[device]={plan:clone(data.plan),products:clone(data.products)};persist();renderAll();showToast("Данные восстановлены");}catch(e){showToast(e.message||"Не удалось прочитать файл");}};reader.readAsText(file);}
+function importData(file){const reader=new FileReader();reader.onload=()=>{try{const parsed=JSON.parse(reader.result),device=parsed.device==="nanoskin"?"nanoskin":"panasonic",allowed=device==="nanoskin"?["rest","nano_clean","nano_nourish","nano_rf","nano_massaging"]:["rest","lift","pump","eye"];if(!parsed||!Array.isArray(parsed.plan)||parsed.plan.length!==7||!parsed.plan.every(x=>allowed.includes(x)))throw new Error("Файл не содержит корректный план для выбранного аппарата.");const previousDevice=data.device;data.device=device;const issue=validatePlan(parsed.plan);if(issue){data.device=previousDevice;throw new Error(issue);}data={...clone(DEFAULT),...parsed,version:28,device,notes:migrateNotes(parsed.notes,device),profiles:parsed.profiles||clone(DEFAULT.profiles),products:{...(device==="nanoskin"?NANOSKIN_PRODUCTS:PANASONIC_PRODUCTS),...(parsed.products||{})}};data.profiles[device]={plan:clone(data.plan),products:clone(data.products)};persist();renderAll();showToast("Данные восстановлены");}catch(e){showToast(e.message||"Не удалось прочитать файл");}};reader.readAsText(file);}
 
 const PANASONIC_VIDEO_MODES=[
   {key:"lift",title:"RF × EMS LIFT",id:"lu-eWTsOrSM",description:"Подтягивающий уход с RF и EMS. Общее видео для RF-режимов.",duration:"6 мин"},
@@ -381,7 +390,15 @@ const PANASONIC_VIDEO_MODES=[
   {key:"clean",title:"CLEAN",id:"t9wMeb0W9OE",description:"Очищение кожи с ватным диском и лосьоном.",duration:"3 мин"},
   {key:"moist",title:"MOIST",id:"LFQz4_ZYW4g",description:"Увлажняющий уход с сывороткой или эмульсией.",duration:"3 мин"}
 ];
-const NANOSKIN_OFFICIAL_PRODUCT_IMAGE="https://readyskin.su/wp-content/uploads/2021/10/nanoskin-w1778-scaled.jpg";
+// Проверенные фотографии именно nanoSkin со страницы производителя.
+const NANOSKIN_OFFICIAL_IMAGES={
+  frontAngle:"https://readyskin.su/wp-content/uploads/2021/10/1-2.jpg",
+  front:"https://readyskin.su/wp-content/uploads/2021/10/2-3.jpg",
+  handset:"https://readyskin.su/wp-content/uploads/2021/10/4-2.jpg",
+  kit:"https://readyskin.su/wp-content/uploads/2021/10/nanoskin-w1778-scaled.jpg"
+};
+const NANOSKIN_OFFICIAL_PRODUCT_IMAGE=NANOSKIN_OFFICIAL_IMAGES.frontAngle;
+const NANOSKIN_ORIGINAL_DIAGRAMS="https://readyskin.su/wp-content/uploads/2026/07/nanoskin_manual-2.pdf#page=26";
 const NANOSKIN_VIDEO_ID="_PnslhTwDdQ"; // официальный ролик ReadySkin; start указывает на главу соответствующего режима
 const NANOSKIN_VIDEO_MODES=[
   {key:"nano_rf",title:"RF · активация коллагена",id:NANOSKIN_VIDEO_ID,start:75,description:"Официальная видеоинструкция ReadySkin · глава RF. Около 3 минут, контактный гель, начальный уровень 1.",duration:"3 мин"},
@@ -406,7 +423,7 @@ const PANASONIC_PHOTO_GROUPS={
   moist:{title:"MOIST",items:[{src:PANASONIC_IMAGES.moist,alt:"Схема последовательности режима MOIST, подготовленная по инструкции Panasonic",caption:"Нанеси сыворотку или эмульсию → выбери режим MOIST → выбери уровень ионизации → проводи прибором по коже около 3 минут → при желании нанеси дополнительное средство."}]}
 };
 const NANO_FACE_PHOTOS=Array.from({length:6},(_,i)=>({
-  src:imageAsset(`nano-face-${i+1}.svg`),alt:`Схема ReadySkin nanoSkin: направление движения ${i+1}`,
+  src:imageAsset(`nano-face-${i+1}.svg`),alt:`Шаг ${i+1}: векторная перерисовка направления со страницы 26 руководства ReadySkin nanoSkin`,
   caption:[
     "Шаг 1. Веди прибор вверх вдоль линии челюсти к ушам.",
     "Шаг 2. Веди прибор вверх от уголков рта к ушам.",
@@ -420,8 +437,8 @@ const NANOSKIN_PHOTO_GROUPS={
   nano_rf:{title:"RF · направления движения по лицу",items:NANO_FACE_PHOTOS},
   nano_massaging:{title:"Massaging · RF + электростимуляция · направления движения по лицу",items:NANO_FACE_PHOTOS},
   nano_clean:{title:"Cleansing · подготовка",items:[{src:imageAsset("nano-clean-1.svg"),alt:"Подготовка рабочей поверхности к очищению",caption:"Сними фиксирующее кольцо и закрепи нетканую салфетку. Пропитай её мицеллярной водой или очищающим лосьоном на водной основе."}]},
-  nano_nourish:{title:"Nourishing · подготовка",items:[{src:NANOSKIN_OFFICIAL_PRODUCT_IMAGE,fallback:imageAsset("readyskin-nanoskin-hero.png"),alt:"Официальное изображение прибора ReadySkin nanoSkin",caption:"Равномерно нанеси привычное уходовое средство (сыворотку, крем или эссенцию), затем поверх нанеси контактный гель для аппаратной процедуры."}]},
-  nano_cool:{title:"Cool · завершение комплекса",items:[{src:NANOSKIN_OFFICIAL_PRODUCT_IMAGE,fallback:imageAsset("readyskin-nanoskin-hero.png"),alt:"Официальное изображение прибора ReadySkin nanoSkin",caption:"Cool используют в конце комплекса. Перед началом очисти кожу, рабочую поверхность и электроды от остатков геля. Дополнительные косметические средства для Cool не требуются."}]}
+  nano_nourish:{title:"Nourishing · подготовка",items:[{src:NANOSKIN_OFFICIAL_IMAGES.front,alt:"ReadySkin nanoSkin — вид спереди, официальное фото 2",caption:"Фото прибора с официального сайта. Для Nourishing нанеси совместимое с электропорацией уходовое средство, затем поверх контактный гель."}]},
+  nano_cool:{title:"Cool · завершение комплекса",items:[{src:NANOSKIN_OFFICIAL_IMAGES.handset,alt:"ReadySkin nanoSkin — официальный вид аппарата без базы, фото 3",caption:"Фото прибора с официального сайта. Cool используй один раз в конце комплекса, после очистки кожи и рабочей поверхности от излишков геля; дополнительных средств не требуется."}]}
 };
 function photoGroups(){return isNanoskin()?NANOSKIN_PHOTO_GROUPS:PANASONIC_PHOTO_GROUPS;}
 const PANASONIC_CLEAN_SLIDES=[
@@ -438,21 +455,26 @@ const NANOSKIN_CLEAN_SLIDES=[
 ];
 function cleanSlides(){return isNanoskin()?NANOSKIN_CLEAN_SLIDES:PANASONIC_CLEAN_SLIDES;}
 function renderTechnique(){
-  $("techniqueFootnote").textContent=isNanoskin()?"Официальная видеоинструкция ReadySkin. Каждая карточка начинает воспроизведение с главы соответствующего режима. Схемы движений — схематичные иллюстрации, подготовленные по шести направлениям из руководства, а не оригинальные рисунки производителя. Для видео нужен интернет.":"Видео загружается после нажатия. Для просмотра нужен интернет; если встроенный плеер недоступен, открой ролик на YouTube.";
+  $("nanoManualQuickLink").hidden=!isNanoskin();
+  $("techniqueFootnote").textContent=isNanoskin()?"Фото nanoSkin — ссылки на оригинальные фотографии производителя. Для RF и Massaging доступна оригинальная страница 26 руководства с шестью рисунками; шесть отдельных карточек — локальные перерисовки для офлайн-подсказок. Видео и оригинальные материалы требуют интернета.":"Видео загружается после нажатия. Для просмотра нужен интернет; если встроенный плеер недоступен, открой ролик на YouTube.";
   renderVideoSlide();
 }
 function renderVideoSlide(){
   const modes=videoModes(),item=modes[videoIndex];if(!item)return;
   $("videoCount").textContent=`ВИДЕО ${videoIndex+1} ИЗ ${modes.length}`;$("videoTitle").textContent=item.title;$("videoDescription").textContent=item.description;$("videoDuration").textContent=item.duration;
   const stage=$("videoStage");stage.replaceChildren();stage.className="video-stage";
-  const preview=document.createElement("div");preview.className="video-preview";const img=document.createElement("img");img.alt=isNanoskin()?"Официальное изображение ReadySkin nanoSkin":"Превью видео Panasonic";img.loading="lazy";if(isNanoskin()){const fallback=imageAsset("readyskin-nanoskin-hero.png");img.style.objectFit="contain";img.style.background="#f4f0e9";img.referrerPolicy="no-referrer";img.src=NANOSKIN_OFFICIAL_PRODUCT_IMAGE;img.onerror=()=>{if(!img.dataset.fallback){img.dataset.fallback="1";img.src=fallback;}else{img.style.display="none";}};}else{img.src=`https://img.youtube.com/vi/${item.id}/hqdefault.jpg`;img.onerror=()=>{img.style.display="none";};}const overlay=document.createElement("button");overlay.className="video-play";overlay.type="button";overlay.innerHTML="<span>▶</span><small>Смотреть видео</small>";overlay.addEventListener("click",()=>{const frame=document.createElement("iframe");frame.className="video-player";const start=item.start?`&start=${item.start}`:"";frame.src=`https://www.youtube-nocookie.com/embed/${encodeURIComponent(item.id)}?rel=0&playsinline=1${start}`;frame.title=`Видео: ${item.title}`;frame.allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";frame.allowFullscreen=true;frame.referrerPolicy="strict-origin-when-cross-origin";stage.replaceChildren(frame);});preview.append(img,overlay);stage.appendChild(preview);
+  const preview=document.createElement("div");preview.className="video-preview";const img=document.createElement("img");img.alt=isNanoskin()?"Официальное изображение ReadySkin nanoSkin":"Превью видео Panasonic";img.loading="lazy";if(isNanoskin()){img.style.objectFit="contain";img.style.background="#f4f0e9";img.referrerPolicy="no-referrer";img.src=NANOSKIN_OFFICIAL_PRODUCT_IMAGE;img.onerror=()=>{img.style.display="none";preview.classList.add("nanoskin-preview-offline");};}else{img.src=`https://img.youtube.com/vi/${item.id}/hqdefault.jpg`;img.onerror=()=>{img.style.display="none";};}const overlay=document.createElement("button");overlay.className="video-play";overlay.type="button";overlay.innerHTML="<span>▶</span><small>Смотреть видео</small>";overlay.addEventListener("click",()=>{const frame=document.createElement("iframe");frame.className="video-player";const start=item.start?`&start=${item.start}`:"";frame.src=`https://www.youtube-nocookie.com/embed/${encodeURIComponent(item.id)}?rel=0&playsinline=1${start}`;frame.title=`Видео: ${item.title}`;frame.allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";frame.allowFullscreen=true;frame.referrerPolicy="strict-origin-when-cross-origin";stage.replaceChildren(frame);});preview.append(img,overlay);stage.appendChild(preview);
   const dots=$("videoDots");dots.innerHTML="";modes.forEach((v,i)=>{const b=document.createElement("button");b.type="button";b.className="dot"+(i===videoIndex?" active":"");b.setAttribute("aria-label",`Видео ${i+1}: ${v.title}`);b.addEventListener("click",()=>{videoIndex=i;renderVideoSlide();});dots.appendChild(b);});
 }
 function moveVideo(delta){const count=videoModes().length;videoIndex=(videoIndex+delta+count)%count;renderVideoSlide();}
-function openPhotos(){if(currentScreen!=="technique")return;closeOverlayDialogs("photoDialog");const mode=videoModes()[videoIndex],group=photoGroups()[mode.key]||photoGroups()[isNanoskin()?"nano_rf":"lift"];photoItems=group.items;photoIndex=0;$("photoTitle").textContent=group.title;$("photoEyebrow").textContent=isNanoskin()?"СХЕМЫ ДВИЖЕНИЙ И ПОДСКАЗКИ":"СХЕМЫ PANASONIC";renderPhotoSlide();$("photoDialog").showModal();}
+function openPhotos(){if(currentScreen!=="technique")return;closeOverlayDialogs("photoDialog");const mode=videoModes()[videoIndex],group=photoGroups()[mode.key]||photoGroups()[isNanoskin()?"nano_rf":"lift"];photoItems=group.items;photoIndex=0;$("photoTitle").textContent=group.title;$("photoEyebrow").textContent=isNanoskin()?"READY SKIN · ФОТО И ТЕХНИКА":"СХЕМЫ PANASONIC";
+  const original=$("nanoOriginalPanel");const showOriginal=isNanoskin()&&["nano_rf","nano_massaging"].includes(mode.key);
+  original.hidden=!showOriginal;
+  if(showOriginal){$("nanoOriginalLink").href=NANOSKIN_ORIGINAL_DIAGRAMS;}
+  renderPhotoSlide();$("photoDialog").showModal();}
 function renderPhotoSlide(){
   const item=photoItems[photoIndex];if(!item)return;$("photoCount").textContent=`СЛАЙД ${photoIndex+1} ИЗ ${photoItems.length}`;
-  const img=$("photoImage");img.alt=item.alt;img.dataset.fallback="";img.onerror=()=>{if(item.fallback&&!img.dataset.fallback){img.dataset.fallback="1";img.src=item.fallback;}else{$("photoCaption").textContent=item.caption+"\n\nСхема не загрузилась. Открой руководство выбранного аппарата в настройках.";}};img.src=item.src;$("photoCaption").textContent=item.caption;
+  const img=$("photoImage");img.alt=item.alt;img.dataset.fallback="";img.onerror=()=>{if(item.fallback&&!img.dataset.fallback){img.dataset.fallback="1";img.src=item.fallback;}else{img.removeAttribute("src");img.alt="Не удалось загрузить фотографию — открой ссылку на производителя";$("photoCaption").textContent=item.caption+"\n\nФотография доступна онлайн на официальном сайте. Проверь интернет-соединение.";}};img.src=item.src;$("photoCaption").textContent=item.caption;
   const dots=$("photoDots");dots.innerHTML="";photoItems.forEach((_,i)=>{const b=document.createElement("button");b.type="button";b.className="dot"+(i===photoIndex?" active":"");b.setAttribute("aria-label",`Слайд ${i+1}`);b.addEventListener("click",()=>{photoIndex=i;renderPhotoSlide();});dots.appendChild(b);});
 }
 function movePhoto(delta){if(!photoItems.length)return;photoIndex=(photoIndex+delta+photoItems.length)%photoItems.length;renderPhotoSlide();}
@@ -488,7 +510,8 @@ $("calendarExportBtn").addEventListener("click",exportCalendar);$("permissionBtn
 $("saveGoalBtn").addEventListener("click",()=>{data.goal={name:$("goalName").value.trim(),date:$("goalDate").value};persist();renderGoalCard();showToast("Цель сохранена");});
 $("backupBtn").addEventListener("click",backupData);$("importBtn").addEventListener("click",()=>$("importFile").click());$("importFile").addEventListener("change",e=>{const f=e.target.files?.[0];if(f)importData(f);e.target.value="";});
 
-$("videoPrev").addEventListener("click",()=>moveVideo(-1));$("videoNext").addEventListener("click",()=>moveVideo(1));$("openPhotosBtn").addEventListener("click",openPhotos);$("openCleanBtn").addEventListener("click",openClean);
+$("videoPrev").addEventListener("click",()=>moveVideo(-1));$("videoNext").addEventListener("click",()=>moveVideo(1));$("openPhotosBtn").addEventListener("click",openPhotos);
+document.querySelector(".nano-pdf-details").addEventListener("toggle",e=>{if(e.target.open)$("nanoOriginalIframe").src=NANOSKIN_ORIGINAL_DIAGRAMS;});$("openCleanBtn").addEventListener("click",openClean);
 $("closePhotos").addEventListener("click",()=>$ ("photoDialog").close());
 $("photoPrev").addEventListener("click",()=>movePhoto(-1));$("photoNext").addEventListener("click",()=>movePhoto(1));
 $("closeClean").addEventListener("click",()=>$ ("cleanDialog").close());$("cleanPrev").addEventListener("click",()=>moveClean(-1));$("cleanNext").addEventListener("click",()=>moveClean(1));
